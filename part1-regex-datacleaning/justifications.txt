@@ -1,0 +1,88 @@
+Task: Data Cleaning
+===================
+All modifications to the data during cleaning will be justified here.
+(1) Modifications : Remove header, filter conversation, and remove speaker tag
+    Justifications: These actions are quite self-explanatory, we do not need header lines,
+                    and only need conversational lines. The speaker tag is non utterance so
+                    they are also removed.
+
+(2) Modifications : Remove () but preserve content within
+    Justifications: The transcriber complete the word spelling with (), and so removing only
+                    the () would be enough. This preserve the integrity of the sentence.
+
+(3) Modifications : Replace token with explaination text after. dey [: they] -> they
+    Justifications: This preserve the meaning and pronunciation of the sentence.
+
+(4) Modifications : Remove <>, NAK, : tags and content within
+    Justifications: They are extraneous information that are unrelated to the utterance. 
+                    Removing them reduce noise to the data, and greatly preserve the meaning 
+                    of the sentence.
+
+(5) Modifications : Remove tokens starting with &, +..., @
+    Justifications: They are extraneous information that are also unrelated to the utterance. 
+                    They are not english words in the first place. Removing the reduces noise to
+                    the data.
+
+(6) Modifications : Remove - and _
+    Justifications: Some transcribers connect two words into one using - or _ which makes the 
+                    word unrecognizable. Removing will increase amount of words recognized by
+                    the CMU pronunciation dictionary.
+
+(7) Modifications : Remove xxx and yyy
+    Justifications: The strings "xxx" and "yyy" are just placeholders for censored names. Removing
+                    them will improve integrity of the utterance.
+
+Other decisions (non-word utterances (e.g., umm), punctuation, and contractions):
+(1) Non-word utterances (e.g., umm)
+    All non-word utterances are kept during data cleaning because
+    - they reflects natural language use: this keeps the authenticity and naturalness of the spoken 
+      language data, and how spoken English really sound
+    - they gives phonological and acoustic patterns: English has their distinct phonological and 
+      acoustic characteristics that are valuable to when creating a language model that represents 
+      the likelihood of different sound sequences in English.
+    - they gives contextual information
+
+(2) Punctuation
+    All punctuation are kept during data cleaning because
+    - they give sentence boundary identification: they serve as a clear indicators of sentence 
+      boundaries which accurately capture the sound sequences within individual sentences, helping 
+      the language model learn the nuances of English pronunciation
+    - they are expressive and functional: certain punctuation marks, like exclamation points and 
+      question marks, convey variations in intonation and emotion. Retaining these marks helps the 
+      language model capture the prosodic features of spoken English.
+
+(3) Contractions
+    All contractions are kept during data cleaning because:
+    - they reflects natural language use: maintains the authenticity of the language, making it 
+      more representative of how people naturally speak
+    - they preserves syntactic structures: this allows the language model to capture these syntactic 
+      patterns and relationships, which are essential for understanding and generating coherent 
+      and grammatically.
+
+
+
+Task: Transformation
+====================
+All modifications and transformation decisions made are justified here. Generally, everything is kept
+from the cleaned data and src/main.py tries to map each word to ApraBET pronunciation using CMU's 
+pronunciation dictionary line by line.
+
+(1) Words end with apostrophe s ('s)
+    The ApraBET pronunciation of 's is "Z". In many cases, the base word is present in the dictionary,
+    but the version with's is not. To preserve as much as words as possible, the pronunciation of the 
+    word is first map to the pronunciation of the base word, and "Z" is added to the end it. This reduces 
+    the number of unrecognizable words by almost 35%.
+
+(2) Words not in dictionary
+    For words that are not in dictionary, a [UNK] will be replace the word to indicate that they are 
+    out-of-vocabulary. Further processes might be performed when instructions of the next assignment is
+    released.
+
+(3) Words with multiple pronunciation
+    For words that have mulitple pronunciation, src/main.py will map the word to the first pronunciation as
+    the first pronunciation is the most frequent used pronunciation of the word. This will maximized the 
+    likelihood that the words are correctly mapped to their respective pronunciation.
+
+(4) Lexical stress markers
+    All lexical stress markers are kept as they capture stress patterns in words. Retaining them can be 
+    valuable as the language model can account for word stress patterns.
